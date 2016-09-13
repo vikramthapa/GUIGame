@@ -22,6 +22,7 @@ public class GUIGame {
     public static void main(String[] args) {
         // TODO code application logic here
         Game game = new Game();
+        //I have added a comment in the main function
     }
 
 }
