@@ -8,8 +8,8 @@ package component;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -18,56 +18,75 @@ import javax.swing.JPanel;
  *
  * @author anmol
  */
-public class Screen extends JPanel{
-    Ball football;
-    Ball tennisball;
-    Bat bat,bat2,bat3;
-    public Screen()
+public class Screen extends JPanel implements Runnable{
+    Thread game;
+    ArrayList<GameObject> gameObjects=new ArrayList<GameObject>();
+
+    public Screen(int width,int height,Color backgroundColor)
     {
-        bat = new Bat(200,330);
-        bat2 = new Bat(100,100);
-        bat3 = new Bat(400,250);
+        this.setPreferredSize(new Dimension(width,height));
+        this.setBackground(backgroundColor);
         
-        football = new Ball(100,60,10);
-        tennisball = new Ball(200,200,20);
-        this.setPreferredSize(new Dimension(600,350));
-        this.setBackground(Color.gray);
     }
-    
+    public void add(GameObject gameObject)
+    {
+        gameObjects.add(gameObject);
+    }
+    private void setBackGroundColor(Color color)
+    {
+        
+        this.setBackground(color);
+    }
     @Override
     public void paint(Graphics g)
     {
+        super.paint(g);
         render(g);
     }
-    public void render(Graphics g)
+    private void render(Graphics g)
     {
-        super.paint(g);
-        tennisball.paint(g);        
-        football.paint(g);
-        bat.paint(g);
-        bat2.paint(g);
-        bat3.paint(g);
+        /*gameObjects.stream().forEach((go) -> {
+            go.castOnScreen(g);
+        });*/
+        for(int i=0;i<gameObjects.size();i++)
+        {
+            gameObjects.get(i).castOnScreen(g);
+        }
+       
+    }
+    private void move()
+    {
+        for(int i=0;i<gameObjects.size();i++)
+        {
+            gameObjects.get(i).move();
+        }
     }
     public void play()
-    {   while(true)
-        {  try {
-            Thread.sleep(10);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
+    {   
+        game = new Thread(this);
+        game.start();
+        
+    }
+
+    @Override
+    public void run() {
+        
+        if(!gameObjects.isEmpty())
+        {
+            while(true)
+            {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Screen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                this.move();
+                this.repaint();
+            }
         }
-           tennisball.move();
-           football.move();
-           
-           if(tennisball.intersects(football.getArea()))tennisball.toggle();
-           if(football.intersects(tennisball.getArea()))football.toggle();
-           
-           if(tennisball.intersects(bat.getArea()))tennisball.toggle();
-           if(football.intersects(bat2.getArea()))football.toggle();
-           if(tennisball.intersects(bat2.getArea()))tennisball.toggle();
-           if(football.intersects(bat3.getArea()))football.toggle();
-           if(football.intersects(bat3.getArea()))football.toggle();
-           
-           this.repaint();
+        else
+        {
+            System.out.println("Nothing on screen to cast");
         }
     }
 
