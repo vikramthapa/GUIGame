@@ -23,7 +23,9 @@ public class Game implements KeyListener{
     Screen screen;
     Football ball;
     Bat bat;
-    
+    /**
+     * Game starts from here...
+     */
     public Game()
     {
         bat = new Bat(new Point(250,340),100,20,Type.rectangle);
@@ -39,7 +41,10 @@ public class Game implements KeyListener{
         stage.addKeyListener(this);
         screen.play();
     }
-
+/**
+ * This Method is used when any key is Typed
+ * @param e 
+ */
     @Override
     public void keyTyped(KeyEvent e) {
     System.out.println("Key Typed!!!");
